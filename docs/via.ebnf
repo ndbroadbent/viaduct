@@ -1,0 +1,157 @@
+# Via DSL Grammar (EBNF) — Draft v1
+# Scope: model, controller, policy, params, respond, slot (+ minimal action/expr)
+# Notes: Syntax is exploratory and may evolve with implementation feedback.
+
+file            = { toplevel } ;
+
+toplevel        = model_decl | controller_decl | policy_decl | use_decl | plugin_decl ;
+
+use_decl        = "use" , string_lit , eos ;                        # import plugin/module (future)
+plugin_decl     = "plugin" , ident , [ plugin_args ] , eos ;         # enable plugin by name
+plugin_args     = "(" , arg_list , ")" ;
+arg_list        = ( arg | kwarg ) , { "," , ( arg | kwarg ) } ;
+arg             = expr ;
+kwarg           = ident , ":" , expr ;
+
+# ——— Model ——————————————————————————————————————————————————————————————————
+# Defines data shape, associations, validations, and model lifecycle slots.
+model_decl      = "model" , type_ident , "{" , { model_item } , "}" ;
+model_item      = field_decl | assoc_decl | index_decl | validate_decl ;
+
+field_decl      = "field" , ident_opt , ":" , type_ref , field_mods , eos ;
+ident_opt       = ident , [ "?" ] ;                                 // name? => optional
+field_mods      = { field_mod } ;
+field_mod       = default_mod | unique_mod | null_mod | serialize_mod ;
+default_mod     = "=", expr ;
+unique_mod      = "unique" ;
+null_mod        = "nullable" ;                                      // explicit opt-in if not via name?
+serialize_mod   = "serialize" , ":" , bool_lit ;                    // include/exclude in API output
+
+assoc_decl      = belongs_to_decl | has_one_decl | has_many_decl
+                | belongs_to_simple | has_one_simple | has_many_simple ;
+belongs_to_decl = "belongs_to" , ident , ":" , type_ident , eos ;   # explicit target type
+has_one_decl    = "has_one"    , ident , ":" , type_ident , eos ;
+has_many_decl   = "has_many"   , ident , ":" , type_ident , eos ;
+belongs_to_simple = "belongs_to" , ident , eos ;                     # infer type from name
+has_one_simple    = "has_one"    , ident , eos ;
+has_many_simple   = "has_many"   , ident , eos ;
+
+index_decl      = "index" , "(" , ident , { "," , ident } , ")" , [ "unique" ] , eos ;
+validate_decl   = "validate" , ident , validate_rule , eos ;         # e.g., validate title presence
+validate_rule   = ident , [ "(" , arg_list , ")" ] ;               // generic hook for validators
+
+// Params (typed schemas per action)
+params_section  = "params" , "{" , { params_profile } , "}" ;
+// profiles: create, update, editable (shorthand for create+update), or custom
+params_profile  = ( "create" | "update" | "editable" | ident ) , "{" , param_list , "}" ;
+param_list      = [ param_entry , { "," , param_entry } ] ;
+// Either explicit typed entry, or name-only (type inferred from model fields)
+param_entry     = param_entry_typed | param_entry_name ;
+param_entry_typed = ident_opt , ":" , type_ref , { param_attr } ;
+param_entry_name  = ident , { param_attr } ;
+param_attr      = default_mod | transform_mod ;
+transform_mod   = "->" , ident ;                                    # named transformer/coercion
+
+# Responders (resource-level formats)
+respond_with_section = "respond_with" , "[" , format_list , "]" , eos ;
+format_list     = format , { "," , format } ;
+format          = "html" | "json" | ident ;                         # extensible via plugins
+
+# Slots (named extension points). Allowed in both model and controller.
+slot_section    = "slot" , ident , block ;                           # e.g., slot before_save { ... }
+
+# ——— Controller ————————————————————————————————————————————————————————
+# Wires params, responders, actions; may declare controller-level slots.
+controller_decl = "controller" , type_ident , "{" , controller_body , "}" ;
+controller_body = { controller_section } ;
+controller_section = params_section
+                   | actions_section
+                   | respond_with_section
+                   | slot_section
+                   ;
+
+// Actions (default = auto_crud; allow overrides)
+actions_section = "actions" , ( "auto_crud" | action_block ) , eos | action_block ;
+action_block    = "action" , ident , [ action_sig ] , action_body ;  # e.g., action create { ... }
+action_sig      = "(" , [ param_specs ] , ")" ;
+param_specs     = param_spec , { "," , param_spec } ;
+param_spec      = ident , ":" , type_ref ;
+action_body     = override_ref | block ;
+override_ref    = "override" , "->" , rust_ref ;                    # rust("path#symbol")
+rust_ref        = "rust" , "(" , string_lit , ")" ;
+
+# ——— Policy ————————————————————————————————————————————————————————————————
+policy_decl     = "policy" , type_ident , "{" , policy_body , "}" ;
+policy_body     = { policy_section } ;
+policy_section  = policy_scope | policy_rules ;
+
+policy_scope    = "scope" , block ;                                  # filter records
+policy_rules    = "rules" , "{" , { policy_rule } , "}" ;
+policy_rule     = ident , block ;                                     // action name -> condition/body
+
+# ——— Blocks, Statements, and Expressions (minimal) ————————————————
+block           = "{" , { stmt } , "}" ;
+stmt            = let_stmt | expr_stmt | rust_block | render_stmt | return_stmt ;
+
+let_stmt        = "let" , ident , "=" , expr , eos ;
+expr_stmt       = expr , eos ;
+return_stmt     = "return" , [ expr ] , eos ;
+render_stmt     = "render" , string_lit , [ "," , expr_list ] , eos ;
+rust_block      = "rust" , block ;                                   # inline Rust escape hatch
+
+expr_list       = expr , { "," , expr } ;
+
+# Minimal expressions with optional chaining and calls
+expr            = logic_or ;
+logic_or        = logic_and , { "||" , logic_and } ;
+logic_and       = equality , { "&&" , equality } ;
+equality        = relational , { ("==" | "!=") , relational } ;
+relational      = additive , { ("<" | "<=" | ">" | ">=") , additive } ;
+additive        = multiplicative , { ("+" | "-") , multiplicative } ;
+multiplicative  = unary , { ("*" | "/") , unary } ;
+unary           = [ ("!" | "-") ] , primary ;
+primary         = literal
+                | ident
+                | call
+                | member
+                | group
+                ;
+
+group           = "(" , expr , ")" ;
+call            = primary_simple , "(" , [ expr_list ] , ")" ;
+primary_simple  = ident | literal | group ;
+member          = primary_simple , { ( "." , ident ) | ( "&." , ident ) } ; # &. = optional chain
+
+literal         = number_lit | string_lit | bool_lit | nil_lit ;
+bool_lit        = "true" | "false" ;
+nil_lit         = "nil" ;                                             # maps to None
+
+// ——— Types ————————————————————————————————————————————————————————————————
+type_ref        = type_ident , [ type_params ] , [ optional_mark ] ;
+type_params     = "<" , type_ref , { "," , type_ref } , ">" ;
+optional_mark   = "?" ;                                               # Option-like semantics
+
+type_ident      = ident | builtin_type ;
+builtin_type    = "String" | "Text" | "Boolean" | "Integer" | "BigInt"
+                | "Float" | "Decimal" | "DateTime" | "Date" | "Time"
+                | "UUID" | "Json" ;
+
+# ——— Lexical —————————————————————————————————————————————————————————————
+ident           = ident_start , { ident_continue } ;
+ident_start     = letter | "_" ;
+ident_continue  = letter | digit | "_" ;
+
+string_lit      = '"' , { string_char } , '"' ;
+# string_char: any char except unescaped '"' and newline
+
+number_lit      = digit , { digit } , [ "." , digit , { digit } ] ;
+
+letter          = ? Unicode Letter ? ;
+digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+
+# Comments and whitespace handling are specified by the lexer:
+# - Line comments: # ... to end of line
+# - Insignificant whitespace between tokens; statements end on newline or optional ';'.
+
+# End-of-statement (optional semicolon)
+eos             = [ ";" ] ;

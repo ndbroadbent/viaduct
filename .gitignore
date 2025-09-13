@@ -1,0 +1,34 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors/IDE
+.idea/
+.vscode/
+
+# Rust
+target/
+Cargo.lock
+
+# Node/TypeScript
+node_modules/
+.pnpm-store/
+dist/
+.turbo/
+.parcel-cache/
+.cache/
+
+# Astro/Starlight docs
+docs/dist/
+docs/.vite/
+
+# Env/config
+.env
+.env.*
+
+# Tests/artifacts
+coverage/
+
+# Optional: ignore generated Rust output (Via → loco.rs)
+# Uncomment if generated code should not be committed
+# generated/
