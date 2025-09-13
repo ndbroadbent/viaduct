@@ -195,6 +195,39 @@ let team_name = post&.author&.team&.name  # None if any link is missing
   - Future: `serialize: rename("publishedAt")`, `omit_if_nil`, computed attributes via slots.
 - Responders use these rules to render JSON/JSON:API; per-action overrides can adjust exposure.
 
+## Typed HTML Views
+- Goal: compile human-friendly template files into typed Askama structs to catch errors at compile time while keeping templates readable.
+- Source of truth remains plain templates (e.g., `assets/views/posts/show.html`) using Jinja-like syntax (`{{ var }}`, `{% for %}`), but codegen emits:
+  - An Askama struct with the correct fields and lifetimes.
+  - A render shim that returns a `Response` and integrates with `loco.rs`.
+- In Via, controller `respond` blocks declare which template to render and the context; types are inferred from model names, with optional annotations for clarity.
+
+Example (Via):
+```
+controller Post {
+  action show {
+    let post = Post.find(params.id)
+    respond { html { render "posts/show", post } }
+  }
+}
+```
+
+Generated (Rust):
+```
+#[derive(Template)]
+#[template(path = "posts/show.html", ext = "html")]
+struct PostsShow<'a> { post: &'a posts::Model }
+
+fn render_post_show(v: &impl ViewRenderer, post: &posts::Model) -> Result<Response> {
+    let body = PostsShow { post }.render()?;
+    format::render().html(body)
+}
+```
+
+- Lists, maps, and nested contexts are supported (e.g., `items: &'a [posts::Model]`).
+- Partials and slots compile into additional typed templates.
+- Tera remains available as a plugin for teams that prefer dynamic templates; default path favors typed Askama for compile-time safety.
+
 
 ## Plugin System (Critical from Day 1)
 - Plugins provide:

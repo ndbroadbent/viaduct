@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}
+View posts: {{ item.id }}
+{% endblock title %}
+
+{% block content %}
+<h1>View posts: {{ item.id }}</h1>
+<div class="mb-10">
+<div>
+        <label>title: {{item.title}}</label>
+    </div>
+<div>
+        <label>description: {{item.description}}</label>
+    </div>
+<br />
+<a href="/posts">Back to posts</a>
+</div>
+{% endblock content %}
