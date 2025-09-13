@@ -38,7 +38,9 @@ model Post {
     }
   }
 }
+```
 
+```ruby
 controller Post {
   params {
     # 'editable' is shorthand for create + update
@@ -65,7 +67,9 @@ controller Post {
   # Override an action with custom Rust code
   action create override -> rust("src/controllers/posts.rs#create")
 }
+```
 
+```ruby
 policy Post {
   scope {
     # where(team_id: current_team.id)
