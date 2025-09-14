@@ -332,3 +332,11 @@ Generators
 CLI
 - Via: `new`, `gen`, `watch`, `gen types`, `gen migration`, `eject`.
 - Delegate: `cargo loco start`, `db migrate/reset`, `jobs`, `scheduler`.
+
+## Dependency Wiring (IoC)
+- Explicit wiring; no reflection-based containers or service locator.
+- Composition root builds an `App`/`Context`; pass small grouped deps to controllers/jobs/policies.
+- Define ports as traits; implement adapters (real and fakes). Use `Arc<dyn Trait>` for pluggability or generics `T: Trait` for zero-cost wiring.
+- Prefer builders for complex setup; construct at the edges, not inside handlers.
+- Testing swaps fakes at the composition root; no mocking framework required.
+- Via integration: generated code requests only declared deps; plugins register providers explicitly.
