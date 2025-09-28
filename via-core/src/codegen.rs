@@ -146,7 +146,8 @@ fn render_controller(
     )
     .unwrap();
     buffer.push('\n');
-    buffer.push_str("use loco_rs::prelude::*;\n\n");
+    buffer.push_str("use loco_rs::prelude::*;\n");
+    buffer.push_str("use serde_json::json;\n\n");
 
     if !controller.respond_with.is_empty() {
         let formats = controller
@@ -171,15 +172,7 @@ fn render_controller(
 
     let actions = resolve_actions(controller);
     for action in actions {
-        let signature = format!("pub async fn {}() -> Result<Response>", action.handler_name);
-        writeln!(buffer, "{} {{", signature).unwrap();
-        writeln!(
-            buffer,
-            "    todo!(\"Generated stub: {}#{}\");",
-            resource.name, action.action_name
-        )
-        .unwrap();
-        buffer.push_str("}\n\n");
+        buffer.push_str(&render_action_stub(resource, &action));
     }
 
     if let Some(model) = model {
@@ -534,5 +527,25 @@ fn render_manifest() -> String {
     buffer.push_str("[dependencies]\n");
     buffer.push_str("loco-rs = { version = \"0.16\" }\n");
     buffer.push_str("serde = { version = \"1\", features = [\"derive\"] }\n");
+    buffer.push_str("serde_json = { version = \"1\" }\n");
+    buffer
+}
+
+fn render_action_stub(resource: &Resource, action: &ActionSpec) -> String {
+    let mut buffer = String::new();
+    let message = format!("{}#{}", resource.name, action.action_name);
+    writeln!(
+        buffer,
+        "pub async fn {}(State(_ctx): State<AppContext>) -> Result<Response> {{",
+        action.handler_name
+    )
+    .unwrap();
+    writeln!(
+        buffer,
+        "    format::json(json!({{\"todo\": \"{}\"}}))",
+        message
+    )
+    .unwrap();
+    buffer.push_str("}\n\n");
     buffer
 }

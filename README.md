@@ -61,6 +61,8 @@ DSL subset implemented in the MVP:
   `NameUpdateParams` structs.
 - `respond_with [html, json]` captured as metadata constant.
 - Auto-generated controller stubs for CRUD actions plus route scaffolding.
+- Controller stubs accept `State<AppContext>` and return JSON placeholders (`{"todo":
+  "Article#index"}`) so the generated crate compiles cleanly inside a loco.rs app.
 
 Known limitations (tracked in PROJECT.md):
 

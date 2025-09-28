@@ -2,6 +2,7 @@
 // source: /Users/ndbroadbent/code/viaduct/app/resources/articles.via
 
 use loco_rs::prelude::*;
+use serde_json::json;
 
 pub const RESPOND_WITH: &[&str] = &["html", "json"];
 
@@ -15,24 +16,24 @@ pub fn routes() -> Routes {
         .add("/{id}", delete(destroy))
 }
 
-pub async fn index() -> Result<Response> {
-    todo!("Generated stub: Article#index");
+pub async fn index(State(_ctx): State<AppContext>) -> Result<Response> {
+    format::json(json!({"todo": "Article#index"}))
 }
 
-pub async fn show() -> Result<Response> {
-    todo!("Generated stub: Article#show");
+pub async fn show(State(_ctx): State<AppContext>) -> Result<Response> {
+    format::json(json!({"todo": "Article#show"}))
 }
 
-pub async fn create() -> Result<Response> {
-    todo!("Generated stub: Article#create");
+pub async fn create(State(_ctx): State<AppContext>) -> Result<Response> {
+    format::json(json!({"todo": "Article#create"}))
 }
 
-pub async fn update() -> Result<Response> {
-    todo!("Generated stub: Article#update");
+pub async fn update(State(_ctx): State<AppContext>) -> Result<Response> {
+    format::json(json!({"todo": "Article#update"}))
 }
 
-pub async fn destroy() -> Result<Response> {
-    todo!("Generated stub: Article#destroy");
+pub async fn destroy(State(_ctx): State<AppContext>) -> Result<Response> {
+    format::json(json!({"todo": "Article#destroy"}))
 }
 
 // Associated model fields
