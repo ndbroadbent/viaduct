@@ -23,14 +23,16 @@ License: MIT • Tone: pragmatic with a streak of visionary
   `locors_test` sample app (see `App::routes` for how the routes are wired).
 - `generated/Cargo.toml` is owned by the generator; reruns will rewrite it with the
   dependencies needed for the emitted stubs.
+- TypeScript interfaces are emitted under `generated/ts/` with a barrel export to ease
+  consumption from front-end apps.
 - Controller stubs respond with JSON placeholders such as
   `{ "todo": "Resource#update", "id": "...", "payload": {...} }` and accept
   `State<AppContext)` plus appropriate `Path` / `Json` extractors so the host app can
   compile/run immediately.
 - Controllers currently stub handlers with `todo!()`; wiring into `AppContext`
   responders/policies/jobs remains follow-up work.
-- Missing pieces: watch mode, granular actions, policies, inline Rust escapes, TypeScript
-  output, richer type mapping, association DSL, and plugin hooks.
+- Missing pieces: watch mode, granular actions, policies, inline Rust escapes, richer
+  type mapping, association DSL, and plugin hooks.
 
 
 ## Naming (decision)

@@ -33,6 +33,8 @@ What works today:
   wired into the sample `locors_test` loco.rs app.
 - The generator owns `generated/Cargo.toml`; it is rewritten on each run with the
   dependencies required by the stubs.
+- TypeScript interfaces land in `generated/ts/models/*.ts` with a barrel export at
+  `generated/ts/index.ts`.
 
 Try it from the repo root:
 
@@ -49,6 +51,12 @@ You can confirm the integration with the example loco.rs app by running:
 
 ```bash
 cargo check --manifest-path locors_test/Cargo.toml
+```
+
+TypeScript consumers can import straight from the barrel:
+
+```ts
+import type { Article, ArticleCreateParams } from '../generated/ts';
 ```
 
 DSL subset implemented in the MVP:
