@@ -55,6 +55,7 @@ impl Hooks for App {
             .add_route(controllers::posts::routes())
             .add_route(controllers::auth::routes())
             .add_route(generated_controllers::article::routes())
+            .add_route(generated_controllers::comment::routes())
     }
     async fn connect_workers(ctx: &AppContext, queue: &Queue) -> Result<()> {
         queue.register(DownloadWorker::build(ctx)).await?;

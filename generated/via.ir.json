@@ -72,5 +72,71 @@
       "actions": "AutoCrud"
     },
     "file_path": "/Users/ndbroadbent/code/viaduct/app/resources/articles.via"
+  },
+  {
+    "name": "Comment",
+    "model": {
+      "fields": [
+        {
+          "name": "body",
+          "ty": {
+            "name": "Text",
+            "optional": false
+          },
+          "optional": false,
+          "attributes": {
+            "serialize": null
+          }
+        },
+        {
+          "name": "author_name",
+          "ty": {
+            "name": "String",
+            "optional": false
+          },
+          "optional": false,
+          "attributes": {
+            "serialize": null
+          }
+        },
+        {
+          "name": "article_id",
+          "ty": {
+            "name": "UUID",
+            "optional": false
+          },
+          "optional": false,
+          "attributes": {
+            "serialize": null
+          }
+        }
+      ]
+    },
+    "controller": {
+      "params": [
+        {
+          "name": "Editable",
+          "entries": [
+            {
+              "name": "body",
+              "optional": false
+            },
+            {
+              "name": "author_name",
+              "optional": false
+            },
+            {
+              "name": "article_id",
+              "optional": false
+            }
+          ]
+        }
+      ],
+      "respond_with": [
+        "json"
+      ],
+      "actions": "AutoCrud"
+    },
+    "file_path": "/Users/ndbroadbent/code/viaduct/app/resources/comments.via"
   }
 ]
