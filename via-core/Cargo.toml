@@ -1,0 +1,19 @@
+[package]
+name = "via-core"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "via"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4.5", features = ["derive"] }
+convert_case = "0.6"
+pest = { version = "2.7", default-features = false, features = ["std"] }
+pest_derive = "2.7"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+walkdir = "2.5"

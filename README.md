@@ -15,6 +15,53 @@ Rails ergonomics, Rust performance. Viaduct is a high‑level web framework that
 
 Status: **exploratory/experimental**. Scope evolves as ideas crystallize. MIT licensed.
 
+## MVP 0.1 (October 2025)
+
+The first end-to-end spike is now checked in under `via-core/`. It provides a minimal
+`via` CLI that parses `.via` resources and emits generated Rust stubs plus an IR JSON
+artifact.
+
+What works today:
+
+- `resource` files with `model` and `controller` blocks.
+- `model` fields with optional `?` suffix and `serialize: false` flag.
+- `controller` sections for `params { editable { ... } }`, `respond_with […]`, and
+  `actions auto_crud`.
+- Codegen for `generated/src/models/*.rs`, `generated/src/controllers/*.rs`,
+  `generated/src/{lib,models/mod,controllers/mod}.rs`, and `generated/via.ir.json`.
+
+Try it from the repo root:
+
+```bash
+cargo run --manifest-path via-core/Cargo.toml --bin via -- gen \
+  --app app \
+  --out generated
+```
+
+This reads files under `app/` (see `app/resources/posts.via` for the sample resource)
+and regenerates the Rust stubs in `generated/`.
+
+DSL subset implemented in the MVP:
+
+- `resource Name { … }` with single `model { … }` and `controller { … }` blocks.
+- `field name: Type` and `field name?: Type` (nullability inferred); `serialize: false`.
+- Built-in types mapped to Rust primitives (`String`, `bool`, `i64`, etc.). Date/time
+  types currently map to `String` with TODO comments.
+- `params { editable { field, … } }` expands to `NameCreateParams` and
+  `NameUpdateParams` structs.
+- `respond_with [html, json]` captured as metadata constant.
+- Auto-generated controller stubs for CRUD actions plus route scaffolding.
+
+Known limitations (tracked in PROJECT.md):
+
+- Controllers emit placeholder handlers with `todo!()` and minimal signatures; they do
+  not yet wire into `AppContext` or real responders.
+- Watch mode, incremental rebuilds, and plugin hooks are not implemented.
+- No grammar support yet for `policy`, inline `rust { ... }`, `respond { ... }`, or
+  per-action overrides; the README examples below remain aspirational.
+- Generated code currently assumes the consumer will add the appropriate `loco.rs`
+  imports and update routing glue in the host app.
+
 ## Example
 
 ```ruby

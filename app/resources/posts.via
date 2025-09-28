@@ -1,0 +1,18 @@
+# Example Via resource used for the MVP generator
+resource Post {
+  model {
+    field title: String
+    field body?: Text
+    field published_at?: DateTime
+    field hidden: Boolean serialize: false
+  }
+
+  controller {
+    params {
+      editable { title, body }
+    }
+
+    respond_with [html, json]
+    actions auto_crud
+  }
+}

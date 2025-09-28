@@ -1,0 +1,50 @@
+WHITESPACE = _{ " " | "\t" | NEWLINE | COMMENT }
+COMMENT = _{ "#" ~ (!NEWLINE ~ ANY)* | "//" ~ (!NEWLINE ~ ANY)* }
+NEWLINE = _{ "\r\n" | "\n" }
+
+file = { SOI ~ item* ~ EOI }
+item = _{ resource }
+
+resource = { KW_RESOURCE ~ ident ~ block_resource }
+block_resource = _{ "{" ~ resource_item* ~ "}" }
+resource_item = _{ model_section | controller_section }
+
+model_section = { KW_MODEL ~ block_model }
+block_model = _{ "{" ~ field_decl* ~ "}" }
+field_decl = { KW_FIELD ~ field_name ~ ":" ~ type_ref ~ field_attr* }
+field_name = { ident ~ optional_mark? }
+field_attr = _{ serialize_attr }
+serialize_attr = { KW_SERIALIZE ~ ":" ~ bool }
+
+params_section = { KW_PARAMS ~ "{" ~ params_profile* ~ "}" }
+params_profile = { ident ~ "{" ~ param_entry_list? ~ "}" }
+param_entry_list = { param_entry ~ (separator ~ param_entry)* ~ separator? }
+separator = _{ "," }
+param_entry = { ident ~ optional_mark? }
+
+respond_with_section = { KW_RESPOND_WITH ~ "[" ~ format_list? ~ "]" }
+format_list = { ident ~ ("," ~ ident)* ~ ","? }
+
+actions_section = { KW_ACTIONS ~ KW_AUTO_CRUD }
+
+controller_section = { KW_CONTROLLER ~ "{" ~ controller_item* ~ "}" }
+controller_item = _{ params_section | respond_with_section | actions_section }
+
+type_ref = { ident ~ optional_mark? }
+optional_mark = { "?" }
+
+bool = { KW_TRUE | KW_FALSE }
+
+ident = @{ (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_")* }
+
+KW_RESOURCE = _{ "resource" }
+KW_MODEL = _{ "model" }
+KW_FIELD = _{ "field" }
+KW_PARAMS = _{ "params" }
+KW_SERIALIZE = _{ "serialize" }
+KW_RESPOND_WITH = _{ "respond_with" }
+KW_CONTROLLER = _{ "controller" }
+KW_ACTIONS = _{ "actions" }
+KW_AUTO_CRUD = _{ "auto_crud" }
+KW_TRUE = _{ "true" }
+KW_FALSE = _{ "false" }

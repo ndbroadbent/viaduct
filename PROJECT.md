@@ -10,6 +10,21 @@ License: MIT • Tone: pragmatic with a streak of visionary
 - Secondary: Any teams building modern web apps that value convention over configuration.
 
 
+## MVP Snapshot (Oct 2025)
+- `via-core/` crate exposes a `via` CLI (`gen` + `check`).
+- DSL support: `resource` with `model` + `controller`, `field` optionality via `?`,
+  `serialize: false`, `params { editable { … } }`, `respond_with [ … ]`, and
+  `actions auto_crud`.
+- Code generation emits `generated/src/models/*.rs`, `generated/src/controllers/*.rs`,
+  root `mod.rs` files, and `generated/via.ir.json` for downstream tooling.
+- Example input lives at `app/resources/posts.via` and represents the current grammar
+  baseline.
+- Controllers currently stub handlers with `todo!()`; wiring into `AppContext`
+  responders/policies/jobs remains follow-up work.
+- Missing pieces: watch mode, granular actions, policies, inline Rust escapes, TypeScript
+  output, richer type mapping, association DSL, and plugin hooks.
+
+
 ## Naming (decision)
 - Project name: Viaduct
 - DSL: Via (`.via` files)
@@ -272,18 +287,26 @@ fn render_post_show(v: &impl ViewRenderer, post: &posts::Model) -> Result<Respon
 
 
 ## Next Steps
-- Adopt Viaduct/Via naming across prototypes and examples.
-- Draft the Via DSL grammar (EBNF) for `resource`, `model`, `params`, `policy`, `respond`, and `slot`.
-- Prototype: parse → generate a minimal `loco.rs` app implementing one `Post` resource with auto CRUD, typed params, responders, and a simple policy.
-- Build `via watch` pipeline to regenerate Rust and run the app on changes.
-- Identify and register core plugin hooks; build an example plugin.
+- Harden the `via` CLI UX: discover project roots automatically, ship a binary name
+  alias, surface rich parse errors, and add `--watch` plus dry-run/verbose modes.
+- Extend the grammar to cover actions with bodies, `policy` blocks, inline `respond`
+  declarations, associations, slots, and inline `rust { ... }` escapes.
+- Improve type fidelity: map dates/times to `chrono`, UUIDs to `uuid`, allow explicit
+  imports, and surface compile-time hints in generated code + IR.
+- Wire generated controllers into a real `loco.rs` app (`locors_test/`), including
+  responders, params extraction, and tests.
+- Emit TypeScript models (and OpenAPI metadata) from the shared IR alongside Rust.
+- Design and implement the plugin/hook API; provide at least one responder and one auth
+  plugin as reference implementations.
+- Deliver `via watch` for incremental regeneration plus an opt-in `build.rs`
+  integration path.
 
 ## Packages (initial layout)
 - `via-core`: parser, type inference, codegen to `loco.rs`, watch pipeline, hooks API.
 - `via-responders`: responders DSL + codegen, content negotiation, HTML/JSON bridges.
 - `via-auth`: users, sessions/CSRF, JWT, OAuth providers, RBAC primitives and policies.
 - `viaduct-starter-kit`: admin panel, webhooks, Stripe, frontend integrations (separate package).
- - `via-types` (planned): generates TypeScript models/schemas and client helpers from Via definitions.
+- `via-types` (planned): generates TypeScript models/schemas and client helpers from Via definitions.
 
 ## Tooling Preferences
 - Rust, TypeScript
