@@ -21,6 +21,8 @@ License: MIT • Tone: pragmatic with a streak of visionary
   baseline.
 - Generated code is compiled as a `via-generated` crate and consumed by the
   `locors_test` sample app (see `App::routes` for how the routes are wired).
+- `generated/Cargo.toml` is owned by the generator; reruns will rewrite it with the
+  dependencies needed for the emitted stubs.
 - Controllers currently stub handlers with `todo!()`; wiring into `AppContext`
   responders/policies/jobs remains follow-up work.
 - Missing pieces: watch mode, granular actions, policies, inline Rust escapes, TypeScript

@@ -31,6 +31,8 @@ What works today:
   `generated/src/{lib,models/mod,controllers/mod}.rs`, and `generated/via.ir.json`.
 - Generated Rust ships as a standalone crate (`generated/` → `via-generated`) that is
   wired into the sample `locors_test` loco.rs app.
+- The generator owns `generated/Cargo.toml`; it is rewritten on each run with the
+  dependencies required by the stubs.
 
 Try it from the repo root:
 
