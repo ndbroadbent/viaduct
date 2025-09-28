@@ -3,6 +3,7 @@
 
 use loco_rs::prelude::*;
 use serde_json::json;
+use crate::models::{ArticleCreateParams, ArticleUpdateParams};
 
 pub const RESPOND_WITH: &[&str] = &["html", "json"];
 
@@ -20,20 +21,20 @@ pub async fn index(State(_ctx): State<AppContext>) -> Result<Response> {
     format::json(json!({"todo": "Article#index"}))
 }
 
-pub async fn show(State(_ctx): State<AppContext>) -> Result<Response> {
-    format::json(json!({"todo": "Article#show"}))
+pub async fn show(State(_ctx): State<AppContext>, Path(id): Path<String>) -> Result<Response> {
+    format::json(json!({"todo": "Article#show", "id": id}))
 }
 
-pub async fn create(State(_ctx): State<AppContext>) -> Result<Response> {
-    format::json(json!({"todo": "Article#create"}))
+pub async fn create(State(_ctx): State<AppContext>, Json(payload): Json<ArticleCreateParams>) -> Result<Response> {
+    format::json(json!({"todo": "Article#create", "payload": payload}))
 }
 
-pub async fn update(State(_ctx): State<AppContext>) -> Result<Response> {
-    format::json(json!({"todo": "Article#update"}))
+pub async fn update(State(_ctx): State<AppContext>, Path(id): Path<String>, Json(payload): Json<ArticleUpdateParams>) -> Result<Response> {
+    format::json(json!({"todo": "Article#update", "id": id, "payload": payload}))
 }
 
-pub async fn destroy(State(_ctx): State<AppContext>) -> Result<Response> {
-    format::json(json!({"todo": "Article#destroy"}))
+pub async fn destroy(State(_ctx): State<AppContext>, Path(id): Path<String>) -> Result<Response> {
+    format::json(json!({"todo": "Article#destroy", "id": id}))
 }
 
 // Associated model fields

@@ -147,7 +147,17 @@ fn render_controller(
     .unwrap();
     buffer.push('\n');
     buffer.push_str("use loco_rs::prelude::*;\n");
-    buffer.push_str("use serde_json::json;\n\n");
+    buffer.push_str("use serde_json::json;\n");
+
+    let param_structs = build_param_structs(&resource.name, controller, model);
+    if !param_structs.is_empty() {
+        let mut names: Vec<String> = param_structs.iter().map(|ps| ps.name.clone()).collect();
+        names.sort();
+        names.dedup();
+        writeln!(buffer, "use crate::models::{{{}}};", names.join(", ")).unwrap();
+    }
+
+    buffer.push('\n');
 
     if !controller.respond_with.is_empty() {
         let formats = controller
@@ -172,7 +182,7 @@ fn render_controller(
 
     let actions = resolve_actions(controller);
     for action in actions {
-        buffer.push_str(&render_action_stub(resource, &action));
+        buffer.push_str(&render_action_stub(resource, &action, &param_structs));
     }
 
     if let Some(model) = model {
@@ -531,21 +541,104 @@ fn render_manifest() -> String {
     buffer
 }
 
-fn render_action_stub(resource: &Resource, action: &ActionSpec) -> String {
+fn render_action_stub(
+    resource: &Resource,
+    action: &ActionSpec,
+    param_structs: &[ParamStruct],
+) -> String {
     let mut buffer = String::new();
     let message = format!("{}#{}", resource.name, action.action_name);
-    writeln!(
-        buffer,
-        "pub async fn {}(State(_ctx): State<AppContext>) -> Result<Response> {{",
-        action.handler_name
-    )
-    .unwrap();
-    writeln!(
-        buffer,
-        "    format::json(json!({{\"todo\": \"{}\"}}))",
-        message
-    )
-    .unwrap();
-    buffer.push_str("}\n\n");
+    match action.action_name.as_str() {
+        "index" => {
+            writeln!(
+                buffer,
+                "pub async fn {}(State(_ctx): State<AppContext>) -> Result<Response> {{",
+                action.handler_name
+            )
+            .unwrap();
+            writeln!(
+                buffer,
+                "    format::json(json!({{\"todo\": \"{}\"}}))",
+                message
+            )
+            .unwrap();
+            buffer.push_str("}\n\n");
+        }
+        "show" | "destroy" => {
+            writeln!(
+                buffer,
+                "pub async fn {}(State(_ctx): State<AppContext>, Path(id): Path<String>) -> Result<Response> {{",
+                action.handler_name
+            )
+            .unwrap();
+            writeln!(
+                buffer,
+                "    format::json(json!({{\"todo\": \"{}\", \"id\": id}}))",
+                message
+            )
+            .unwrap();
+            buffer.push_str("}\n\n");
+        }
+        "create" => {
+            let struct_name =
+                find_param_struct_name(param_structs, &format!("{}CreateParams", resource.name))
+                    .unwrap_or_else(|| "serde_json::Value".to_owned());
+            writeln!(
+                buffer,
+                "pub async fn {}(State(_ctx): State<AppContext>, Json(payload): Json<{}>) -> Result<Response> {{",
+                action.handler_name,
+                struct_name
+            )
+            .unwrap();
+            writeln!(
+                buffer,
+                "    format::json(json!({{\"todo\": \"{}\", \"payload\": payload}}))",
+                message
+            )
+            .unwrap();
+            buffer.push_str("}\n\n");
+        }
+        "update" => {
+            let struct_name =
+                find_param_struct_name(param_structs, &format!("{}UpdateParams", resource.name))
+                    .unwrap_or_else(|| "serde_json::Value".to_owned());
+            writeln!(
+                buffer,
+                "pub async fn {}(State(_ctx): State<AppContext>, Path(id): Path<String>, Json(payload): Json<{}>) -> Result<Response> {{",
+                action.handler_name,
+                struct_name
+            )
+            .unwrap();
+            writeln!(
+                buffer,
+                "    format::json(json!({{\"todo\": \"{}\", \"id\": id, \"payload\": payload}}))",
+                message
+            )
+            .unwrap();
+            buffer.push_str("}\n\n");
+        }
+        _ => {
+            writeln!(
+                buffer,
+                "pub async fn {}(State(_ctx): State<AppContext>) -> Result<Response> {{",
+                action.handler_name
+            )
+            .unwrap();
+            writeln!(
+                buffer,
+                "    format::json(json!({{\"todo\": \"{}\"}}))",
+                message
+            )
+            .unwrap();
+            buffer.push_str("}\n\n");
+        }
+    }
     buffer
+}
+
+fn find_param_struct_name(param_structs: &[ParamStruct], target: &str) -> Option<String> {
+    param_structs
+        .iter()
+        .find(|ps| ps.name == target)
+        .map(|ps| ps.name.clone())
 }
