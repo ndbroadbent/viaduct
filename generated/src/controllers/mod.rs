@@ -2,6 +2,3 @@
 
 pub mod article;
 pub mod comment;
-
-pub use article::*;
-pub use comment::*;
