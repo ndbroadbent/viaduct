@@ -1,0 +1,150 @@
+[
+  {
+    "name": "Article",
+    "model": {
+      "fields": [
+        {
+          "name": "title",
+          "ty": {
+            "name": "String",
+            "optional": false
+          },
+          "optional": false,
+          "attributes": {
+            "serialize": null
+          }
+        },
+        {
+          "name": "body",
+          "ty": {
+            "name": "Text",
+            "optional": false
+          },
+          "optional": false,
+          "attributes": {
+            "serialize": null
+          }
+        },
+        {
+          "name": "published_at",
+          "ty": {
+            "name": "DateTime",
+            "optional": false
+          },
+          "optional": true,
+          "attributes": {
+            "serialize": null
+          }
+        },
+        {
+          "name": "author_name",
+          "ty": {
+            "name": "String",
+            "optional": false
+          },
+          "optional": false,
+          "attributes": {
+            "serialize": null
+          }
+        }
+      ]
+    },
+    "controller": {
+      "params": [
+        {
+          "name": "Editable",
+          "entries": [
+            {
+              "name": "title",
+              "optional": false
+            },
+            {
+              "name": "body",
+              "optional": false
+            },
+            {
+              "name": "published_at",
+              "optional": false
+            },
+            {
+              "name": "author_name",
+              "optional": false
+            }
+          ]
+        }
+      ],
+      "respond_with": [
+        "html",
+        "json"
+      ],
+      "actions": "AutoCrud"
+    },
+    "file_path": "/Users/ndbroadbent/code/viaduct/examples/blog/app/resources/articles.via"
+  },
+  {
+    "name": "Comment",
+    "model": {
+      "fields": [
+        {
+          "name": "body",
+          "ty": {
+            "name": "Text",
+            "optional": false
+          },
+          "optional": false,
+          "attributes": {
+            "serialize": null
+          }
+        },
+        {
+          "name": "author_name",
+          "ty": {
+            "name": "String",
+            "optional": false
+          },
+          "optional": false,
+          "attributes": {
+            "serialize": null
+          }
+        },
+        {
+          "name": "article_id",
+          "ty": {
+            "name": "UUID",
+            "optional": false
+          },
+          "optional": false,
+          "attributes": {
+            "serialize": null
+          }
+        }
+      ]
+    },
+    "controller": {
+      "params": [
+        {
+          "name": "Editable",
+          "entries": [
+            {
+              "name": "body",
+              "optional": false
+            },
+            {
+              "name": "author_name",
+              "optional": false
+            },
+            {
+              "name": "article_id",
+              "optional": false
+            }
+          ]
+        }
+      ],
+      "respond_with": [
+        "json"
+      ],
+      "actions": "AutoCrud"
+    },
+    "file_path": "/Users/ndbroadbent/code/viaduct/examples/blog/app/resources/comments.via"
+  }
+]

@@ -1,0 +1,17 @@
+# Nested comment resource demonstrating associations
+resource Comment {
+  model {
+    field body: Text
+    field author_name: String
+    field article_id: UUID
+  }
+
+  controller {
+    params {
+      editable { body, author_name, article_id }
+    }
+
+    respond_with [json]
+    actions auto_crud
+  }
+}

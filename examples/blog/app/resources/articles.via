@@ -1,0 +1,18 @@
+# Blog article resource demo
+resource Article {
+  model {
+    field title: String
+    field body: Text
+    field published_at?: DateTime
+    field author_name: String
+  }
+
+  controller {
+    params {
+      editable { title, body, published_at, author_name }
+    }
+
+    respond_with [html, json]
+    actions auto_crud
+  }
+}

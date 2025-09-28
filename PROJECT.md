@@ -29,6 +29,8 @@ License: MIT • Tone: pragmatic with a streak of visionary
   `{ "todo": "Resource#update", "id": "...", "payload": {...} }` and accept
   `State<AppContext)` plus appropriate `Path` / `Json` extractors so the host app can
   compile/run immediately.
+- `examples/blog` demonstrates a minimal multi-resource Via app (Articles & Comments)
+  with generated Rust + TypeScript artefacts.
 - Controllers currently stub handlers with `todo!()`; wiring into `AppContext`
   responders/policies/jobs remains follow-up work.
 - Missing pieces: watch mode, granular actions, policies, inline Rust escapes, richer

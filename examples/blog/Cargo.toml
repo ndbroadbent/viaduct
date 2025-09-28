@@ -1,0 +1,13 @@
+[package]
+name = "blog"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+loco-rs = { version = "0.16" }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+tokio = { version = "1.45", features = ["rt-multi-thread", "macros"] }
+axum = { version = "0.8" }
+via-generated = { path = "generated" }

@@ -72,6 +72,8 @@ DSL subset implemented in the MVP:
 - Controller stubs accept `State<AppContext>`, wire up `Path`/`Json` extractors for ids
   and params, and echo JSON placeholders (`{"todo": "Article#show", "id": "..."}`)
   so the generated crate compiles cleanly inside a loco.rs app.
+- `examples/blog` contains a lightweight demo that defines two Via resources and
+  imports the generated routes/types into a standalone crate.
 
 Known limitations (tracked in PROJECT.md):
 
