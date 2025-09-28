@@ -55,7 +55,7 @@
 - ✅ Snapshot tests for sample resource (Rust + TS + manifest).
 - 🚧 Add fixtures covering optional fields, serialize flags, respond_with custom list, associations.
 - 🚧 Parser unit tests capturing error diagnostics (invalid syntax, missing sections).
-- 🚧 CLI smoke tests to `cargo check` generated crate outputs (basic CLI invocation coverage in place).
+- ✅ CLI smoke tests to `cargo check` generated crate outputs (ensures generated crate compiles).
 
 ### 3.2 Runtime (Generated Apps)
 - 🚧 Request specs in `locors_test/tests` hitting generated routes, verifying DB side effects, JSON payloads.

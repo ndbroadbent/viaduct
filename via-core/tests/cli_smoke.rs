@@ -46,6 +46,32 @@ fn via_gen_writes_outputs() -> Result<()> {
 }
 
 #[test]
+fn via_gen_outputs_cargo_check() -> Result<()> {
+    let tmp = tempdir()?;
+    let crate_dir = tmp.path().join("generated");
+
+    Command::cargo_bin("via")?
+        .arg("gen")
+        .arg("--app")
+        .arg(fixtures_dir())
+        .arg("--out")
+        .arg(&crate_dir)
+        .assert()
+        .success();
+
+    Command::new("cargo")
+        .current_dir(&crate_dir)
+        .env("CARGO_TERM_COLOR", "never")
+        .env("CARGO_TARGET_DIR", tmp.path().join("target"))
+        .arg("check")
+        .assert()
+        .success()
+        .stderr(predicate::str::contains("Finished"));
+
+    Ok(())
+}
+
+#[test]
 fn via_gen_dry_run_lists_resources_without_writing_files() -> Result<()> {
     let tmp = tempdir()?;
     let out_dir = tmp.path().join("generated");
