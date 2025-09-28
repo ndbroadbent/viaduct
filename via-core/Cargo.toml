@@ -21,3 +21,6 @@ walkdir = "2.5"
 [dev-dependencies]
 anyhow = "1"
 insta = { version = "1.38", features = ["yaml"] }
+assert_cmd = "2.0"
+tempfile = "3.10"
+predicates = "3.1"
