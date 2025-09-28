@@ -17,6 +17,7 @@ use std::path::Path;
 use crate::{
     controllers, initializers, models::_entities::users, tasks, workers::downloader::DownloadWorker,
 };
+use via_generated::controllers as generated_controllers;
 
 pub struct App;
 #[async_trait]
@@ -53,6 +54,7 @@ impl Hooks for App {
         AppRoutes::with_default_routes() // controller routes below
             .add_route(controllers::posts::routes())
             .add_route(controllers::auth::routes())
+            .add_route(generated_controllers::article::routes())
     }
     async fn connect_workers(ctx: &AppContext, queue: &Queue) -> Result<()> {
         queue.register(DownloadWorker::build(ctx)).await?;

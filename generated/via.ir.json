@@ -1,6 +1,6 @@
 [
   {
-    "name": "Post",
+    "name": "Article",
     "model": {
       "fields": [
         {
@@ -71,6 +71,6 @@
       ],
       "actions": "AutoCrud"
     },
-    "file_path": "/Users/ndbroadbent/code/viaduct/app/resources/posts.via"
+    "file_path": "/Users/ndbroadbent/code/viaduct/app/resources/articles.via"
   }
 ]

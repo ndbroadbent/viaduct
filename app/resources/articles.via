@@ -1,5 +1,5 @@
 # Example Via resource used for the MVP generator
-resource Post {
+resource Article {
   model {
     field title: String
     field body?: Text

@@ -29,6 +29,8 @@ What works today:
   `actions auto_crud`.
 - Codegen for `generated/src/models/*.rs`, `generated/src/controllers/*.rs`,
   `generated/src/{lib,models/mod,controllers/mod}.rs`, and `generated/via.ir.json`.
+- Generated Rust ships as a standalone crate (`generated/` → `via-generated`) that is
+  wired into the sample `locors_test` loco.rs app.
 
 Try it from the repo root:
 
@@ -38,8 +40,14 @@ cargo run --manifest-path via-core/Cargo.toml --bin via -- gen \
   --out generated
 ```
 
-This reads files under `app/` (see `app/resources/posts.via` for the sample resource)
+This reads files under `app/` (see `app/resources/articles.via` for the sample resource)
 and regenerates the Rust stubs in `generated/`.
+
+You can confirm the integration with the example loco.rs app by running:
+
+```bash
+cargo check --manifest-path locors_test/Cargo.toml
+```
 
 DSL subset implemented in the MVP:
 

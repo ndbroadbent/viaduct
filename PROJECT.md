@@ -17,8 +17,10 @@ License: MIT • Tone: pragmatic with a streak of visionary
   `actions auto_crud`.
 - Code generation emits `generated/src/models/*.rs`, `generated/src/controllers/*.rs`,
   root `mod.rs` files, and `generated/via.ir.json` for downstream tooling.
-- Example input lives at `app/resources/posts.via` and represents the current grammar
+- Example input lives at `app/resources/articles.via` and represents the current grammar
   baseline.
+- Generated code is compiled as a `via-generated` crate and consumed by the
+  `locors_test` sample app (see `App::routes` for how the routes are wired).
 - Controllers currently stub handlers with `todo!()`; wiring into `AppContext`
   responders/policies/jobs remains follow-up work.
 - Missing pieces: watch mode, granular actions, policies, inline Rust escapes, TypeScript
@@ -293,8 +295,8 @@ fn render_post_show(v: &impl ViewRenderer, post: &posts::Model) -> Result<Respon
   declarations, associations, slots, and inline `rust { ... }` escapes.
 - Improve type fidelity: map dates/times to `chrono`, UUIDs to `uuid`, allow explicit
   imports, and surface compile-time hints in generated code + IR.
-- Wire generated controllers into a real `loco.rs` app (`locors_test/`), including
-  responders, params extraction, and tests.
+- Wire generated controllers into a real `loco.rs` app (`locors_test/`) with real
+  responders, params extraction, persistence, and tests.
 - Emit TypeScript models (and OpenAPI metadata) from the shared IR alongside Rust.
 - Design and implement the plugin/hook API; provide at least one responder and one auth
   plugin as reference implementations.
