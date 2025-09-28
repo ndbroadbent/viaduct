@@ -15,7 +15,7 @@ Rails ergonomics, Rust performance. Viaduct is a high‑level web framework that
 
 Status: **exploratory/experimental**. Scope evolves as ideas crystallize. MIT licensed.
 
-## MVP 0.1 (October 2025)
+## MVP 0.1 (September 2025)
 
 The first end-to-end spike is now checked in under `via-core/`. It provides a minimal
 `via` CLI that parses `.via` resources and emits generated Rust stubs plus an IR JSON
@@ -56,7 +56,7 @@ cargo check --manifest-path locors_test/Cargo.toml
 TypeScript consumers can import straight from the barrel:
 
 ```ts
-import type { Article, ArticleCreateParams } from '../generated/ts';
+import type { Article, ArticleCreateParams } from "../generated/ts";
 ```
 
 DSL subset implemented in the MVP:
